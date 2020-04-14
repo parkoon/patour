@@ -8,6 +8,17 @@ const tours = JSON.parse(
   )
 );
 
+exports.checkId = (req, res, next, val) => {
+  const tour = tours.find((t) => t.id === val * 1);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'failure',
+      error: 'tour not found',
+    });
+  }
+  next();
+};
+
 exports.getTours = (req, res) => {
   res.json({
     status: 'success',
@@ -18,12 +29,6 @@ exports.getTours = (req, res) => {
 exports.getTour = (req, res) => {
   const { id } = req.params;
   const tour = tours.find((t) => t.id === id * 1);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'failure',
-      error: 'tour not found',
-    });
-  }
   res.json({
     status: 'success',
     request_at: req.requestTime,
@@ -48,13 +53,6 @@ exports.createTour = (req, res) => {
 };
 exports.udpateTour = (req, res) => {
   const { id } = req.params;
-  const tour = tours.find((t) => t.id === id * 1);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'failure',
-      error: 'tour not found',
-    });
-  }
   res.json({
     status: 'success',
     tour: 'updated tour....',
@@ -62,14 +60,6 @@ exports.udpateTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  const { id } = req.params;
-  const tour = tours.find((t) => t.id === id * 1);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'failure',
-      error: 'tour not found',
-    });
-  }
   res.status(204).json({
     status: 'success',
   });
