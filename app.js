@@ -86,6 +86,37 @@ const deleteTour = (req, res) => {
   });
 };
 
+const getUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'router is not defined yet',
+  });
+};
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'router is not defined yet',
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'router is not defined yet',
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'router is not defined yet',
+  });
+};
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'router is not defined yet',
+  });
+};
+
 // app.patch('/api/v1/tours/:id', udpateTour);
 // app.post('/api/v1/tours', createTour);
 // app.get('/api/v1/tours/:id', getTour);
@@ -98,5 +129,12 @@ app
   .get(getTour)
   .patch(udpateTour);
 app.route('/api/v1/tours').post(createTour).get(getTours);
+
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .delete(deleteUser)
+  .patch(updateUser);
+app.route('/api/v1/users').post(createUser).get(getUsers);
 
 app.listen(PORT, () => console.log(`Server is runngin on ${PORT}`));
