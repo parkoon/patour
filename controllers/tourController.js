@@ -19,6 +19,20 @@ exports.checkId = (req, res, next, val) => {
   next();
 };
 
+exports.checkBody = (req, res, next) => {
+  const required = ['name', 'price'];
+  required.forEach((field) => {
+    if (!req.body[field]) {
+      console.log(req.body[field]);
+      return res
+        .status(400)
+        .json({ status: 'failure', message: 'Missing name or price' });
+    }
+  });
+
+  next();
+};
+
 exports.getTours = (req, res) => {
   res.json({
     status: 'success',
@@ -43,7 +57,7 @@ exports.createTour = (req, res) => {
   tours.push(newTour);
 
   fs.writeFile(
-    path.join(__dirname, 'dev-data/data/tours-simple.json'),
+    path.join(__dirname, '../dev-data/data/tours-simple.json'),
     JSON.stringify(tours),
     (err) => {
       if (err) return res.status(500).json({ status: 'failure', error: err });

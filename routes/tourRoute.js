@@ -9,6 +9,9 @@ router
   .delete(tourController.deleteTour)
   .get(tourController.getTour)
   .patch(tourController.udpateTour);
-router.route('/').post(tourController.createTour).get(tourController.getTours);
+router
+  .route('/')
+  .get(tourController.getTours)
+  .post(tourController.checkBody, tourController.createTour);
 
 module.exports = router;
