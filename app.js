@@ -54,4 +54,19 @@ app.post('/api/v1/tours', (req, res) => {
   );
 });
 
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const { id } = req.params;
+  const tour = tours.find((t) => t.id === id * 1);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'failure',
+      error: 'tour not found',
+    });
+  }
+  res.json({
+    status: 'success',
+    tour: 'updated tour....',
+  });
+});
+
 app.listen(PORT, () => console.log(`Server is runngin on ${PORT}`));
