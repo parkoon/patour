@@ -14,15 +14,14 @@ const tours = JSON.parse(
   )
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getTours = (req, res) => {
   res.json({
     status: 'success',
     results: tours.length,
     data: { tours },
   });
-});
-
-app.get('/api/v1/tours/:id', (req, res) => {
+};
+const getTour = (req, res) => {
   const { id } = req.params;
   const tour = tours.find((t) => t.id === id * 1);
   if (!tour) {
@@ -37,9 +36,8 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
-
-app.post('/api/v1/tours', (req, res) => {
+};
+const createTour = (req, res) => {
   const nextId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: nextId }, req.body);
   tours.push(newTour);
@@ -52,9 +50,8 @@ app.post('/api/v1/tours', (req, res) => {
       res.status(201).json({ status: 'success', data: { tour: newTour } });
     }
   );
-});
-
-app.patch('/api/v1/tours/:id', (req, res) => {
+};
+const udpateTour = (req, res) => {
   const { id } = req.params;
   const tour = tours.find((t) => t.id === id * 1);
   if (!tour) {
@@ -67,10 +64,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     tour: 'updated tour....',
   });
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
-  console.log('zzz');
+const deleteTour = (req, res) => {
   const { id } = req.params;
   const tour = tours.find((t) => t.id === id * 1);
   if (!tour) {
@@ -82,6 +78,19 @@ app.delete('/api/v1/tours/:id', (req, res) => {
   res.status(204).json({
     status: 'success',
   });
-});
+};
+
+// app.patch('/api/v1/tours/:id', udpateTour);
+// app.post('/api/v1/tours', createTour);
+// app.get('/api/v1/tours/:id', getTour);
+// app.get('/api/v1/tours', getTours);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .delete(deleteTour)
+  .get(getTour)
+  .patch(udpateTour);
+app.route('/api/v1/tours').post(createTour).get(getTours);
 
 app.listen(PORT, () => console.log(`Server is runngin on ${PORT}`));
