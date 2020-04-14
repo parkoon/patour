@@ -5,6 +5,11 @@ const app = express();
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 const PORT = process.env.PORT || 4000;
 
 const tours = JSON.parse(
@@ -32,6 +37,7 @@ const getTour = (req, res) => {
   }
   res.json({
     status: 'success',
+    request_at: req.requestTime,
     data: {
       tour,
     },
