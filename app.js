@@ -10,8 +10,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const PORT = process.env.PORT || 4000;
-
 const tours = JSON.parse(
   fs.readFileSync(
     path.join(__dirname, 'dev-data/data/tours-simple.json'),
@@ -135,4 +133,4 @@ tourRouter.route('/').post(createTour).get(getTours);
 userRouter.route('/:id').get(getUser).delete(deleteUser).patch(updateUser);
 userRouter.route('/').post(createUser).get(getUsers);
 
-app.listen(PORT, () => console.log(`Server is runngin on ${PORT}`));
+module.exports = app;
