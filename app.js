@@ -123,18 +123,16 @@ const createUser = (req, res) => {
 // app.get('/api/v1/tours', getTours);
 // app.delete('/api/v1/tours/:id', deleteTour);
 
-app
-  .route('/api/v1/tours/:id')
-  .delete(deleteTour)
-  .get(getTour)
-  .patch(udpateTour);
-app.route('/api/v1/tours').post(createTour).get(getTours);
+const tourRouter = express.Router();
+const userRouter = express.Router();
 
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .delete(deleteUser)
-  .patch(updateUser);
-app.route('/api/v1/users').post(createUser).get(getUsers);
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+tourRouter.route('/:id').delete(deleteTour).get(getTour).patch(udpateTour);
+tourRouter.route('/').post(createTour).get(getTours);
+
+userRouter.route('/:id').get(getUser).delete(deleteUser).patch(updateUser);
+userRouter.route('/').post(createUser).get(getUsers);
 
 app.listen(PORT, () => console.log(`Server is runngin on ${PORT}`));
