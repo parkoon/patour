@@ -36,18 +36,28 @@ const Tour = require('../models/tourModel');
 
 exports.getTours = async (req, res) => {
   try {
+    console.log(req.query);
+
     // BUILD QUERY
-    // 1) Filtering
+    // 1A) Filtering
     const queryObj = req.query;
     const excludedFields = ['pages', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    // 2) Advanced filtering
+    // 1B) Advanced filtering
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
 
+    let query = Tour.find(JSON.parse(queryStr));
+
+    // 2) Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
     // 쿼리가 객체로 들어오니, 아래 방식보다 아래 방식이 더 효율적!
-    const query = Tour.find(JSON.parse(queryStr));
 
     // EXECUTE QUERY
     const tours = await query;
