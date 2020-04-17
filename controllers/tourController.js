@@ -35,24 +35,35 @@ const Tour = require('../models/tourModel');
 // };
 
 exports.getTours = async (req, res) => {
-  const queryObj = req.query;
-  const excludedFields = ['pages', 'sort', 'limit', 'fields'];
-  excludedFields.forEach((el) => delete queryObj[el]);
   try {
-    // const tours = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
+    // BUILD QUERY
+    // 1) Filtering
+    const queryObj = req.query;
+    const excludedFields = ['pages', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
 
-    // 쿼리가 객체로 들어오니, 위 방식보다 아래 방식이 더 효율적!
-    const tours = await Tour.find(req.query);
+    // 2) Advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
+
+    // 쿼리가 객체로 들어오니, 아래 방식보다 아래 방식이 더 효율적!
+    const query = Tour.find(JSON.parse(queryStr));
+
+    // EXECUTE QUERY
+    const tours = await query;
+
     res.json({
       status: 'success',
       data: {
         tours,
       },
     });
+
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
   } catch (err) {
     res.status(404).json({
       status: 'failure',
