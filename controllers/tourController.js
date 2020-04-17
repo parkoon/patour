@@ -65,7 +65,18 @@ exports.getTours = async (req, res) => {
     } else {
       query = query.select('-__v');
     }
-    // 쿼리가 객체로 들어오니, 아래 방식보다 아래 방식이 더 효율적!
+
+    // 4) Pagination
+    const pages = req.query.pages * 1 || 1;
+    const limit = req.query.limit * 1 || 10;
+    const skip = (pages - 1) * limit;
+
+    if (req.query.pages) {
+      const numTour = await Tour.countDocuments();
+      if (skip >= numTour) throw new Error('페이지가 존재하지 않습니다.');
+    }
+
+    query.skip(skip).limit(limit);
 
     // EXECUTE QUERY
     const tours = await query;
