@@ -40,7 +40,7 @@ exports.getTours = async (req, res) => {
 
     // BUILD QUERY
     // 1A) Filtering
-    const queryObj = req.query;
+    const queryObj = { ...req.query };
     const excludedFields = ['pages', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
@@ -56,6 +56,14 @@ exports.getTours = async (req, res) => {
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
+    }
+
+    // 3) Field limiting
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
     }
     // 쿼리가 객체로 들어오니, 아래 방식보다 아래 방식이 더 효율적!
 
