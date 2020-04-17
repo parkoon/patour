@@ -71,7 +71,7 @@ const tourSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now(),
-      select: false,
+      select: false, // select 할 때 제외된다.
     },
     startDates: [Date],
     secretTour: {
