@@ -1,3 +1,5 @@
+const AppError = require('../helpers/appError');
+
 const errorResDev = (res, err) => {
   res.status(err.statusCode).json({
     err: err,
@@ -28,14 +30,44 @@ const errorResProd = (res, err) => {
   }
 };
 
+const handleDBCastError = (err) => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  return new AppError(message, 400);
+};
+
+const handleDBDucplicatedFieldError = (err) => {
+  const value = err.errmsg.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
+  const message = `Duplicated field error, check your value ${value}`;
+  return new AppError(message, 400);
+};
+
+const handleDBValidationError = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
+  let error = { ...err };
+
+  // Mongo DB Error Exception
+  // 1) ID Cast Error
+  if (error.name === 'CastError') error = handleDBCastError(error);
+
+  // 2) Duplicated Fields
+  if (error.code === 110000) error = handleDBDucplicatedFieldError(error);
+
+  // 3) Validation Error
+  if (error.name === 'ValidationError') error = handleDBValidationError(error);
+
   // PRODUCTION 과 DEVELOPMENT 에러응답 구분
   if (process.env.NODE_ENV === 'development') {
-    errorResDev(res, err);
+    errorResDev(res, error);
   } else {
-    errorResProd(res, err);
+    errorResProd(res, error);
   }
 };
