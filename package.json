@@ -4,8 +4,8 @@
   "description": "Node / Express / MongoDB Tutorial",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=development nodemon server.js",
-    "start:prod": "NODE_ENV=production node server.js",
+    "start": "cross-env NODE_ENV=development nodemon server.js",
+    "start:prod": "cross-env NODE_ENV=production node server.js",
     "debug": "ndb server.js"
   },
   "author": "",
@@ -19,6 +19,7 @@
     "validator": "^13.0.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.10.1",
