@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-// const slugify = require('slugify');
-// const validator = require('validator');
+const slugify = require('slugify');
+const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -11,7 +11,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, 'A tour name must have less or equal then 40 characters'],
       minlength: [10, 'A tour name must have more or equal then 10 characters'],
-      // validate: [validator.isAlpha, 'Tour name must only contain characters']
+      validate: [validator.isAlpha, 'Tour name must only contain characters'],
     },
     slug: String,
     duration: {
@@ -89,11 +89,11 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-// // DOCUMENT MIDDLEWARE: runs before .save() and .create()
-// tourSchema.pre('save', function (next) {
-//   this.slug = slugify(this.name, { lower: true });
-//   next();
-// });
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
 // tourSchema.pre('save', function(next) {
 //   console.log('Will save document...');
@@ -107,25 +107,24 @@ tourSchema.virtual('durationWeeks').get(function () {
 
 // QUERY MIDDLEWARE
 // tourSchema.pre('find', function(next) {
-// tourSchema.pre(/^find/, function (next) {
-//   this.find({ secretTour: { $ne: true } });
 
-//   this.start = Date.now();
-//   next();
-// });
+// 'find'만 사용 했을 때는 find() 와 같은 메소드에서 밖에 동작하지 않는다.
+// 'findOne', 'findById' 을 일일히 다 미들웨어를 등록해줘야 할까?
+// ^find 와 같이 정규 표현식을 이용해 find*** 도 허용 할 수 있도록 한다.
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
 
-// tourSchema.post(/^find/, function (docs, next) {
-//   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
-//   next();
-// });
+  this.start = Date.now();
+  next();
+});
 
 // // AGGREGATION MIDDLEWARE
-// tourSchema.pre('aggregate', function (next) {
-//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 
-//   console.log(this.pipeline());
-//   next();
-// });
+  console.log(this.pipeline());
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 
