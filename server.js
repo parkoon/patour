@@ -14,8 +14,20 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .then(() => console.log('DB is connected'))
-  .catch((err) => console.log(err));
+  .then(() => console.log('DB is connected'));
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server is runngin on ${PORT}`));
+const server = app.listen(PORT, () =>
+  console.log(`Server is runngin on ${PORT}`)
+);
+
+// Unhandled Rejection
+// promise 에서 catch로 에러 처리를 하지 않았을 때 방생하는 요류
+// ref) https://ko.javascript.info/promise-error-handling
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNHANDLED REJECTION: Shutting down...');
+  server.close(() => {
+    process.exit();
+  });
+});
