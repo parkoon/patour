@@ -48,6 +48,12 @@ const handleDBValidationError = (err) => {
   return new AppError(message, 400);
 };
 
+const handleJWTError = (err) =>
+  new AppError(`Invalid Token. Please log in again!`, 401);
+
+const handleJWTExpiredError = () =>
+  new AppError(`Your token has expired! Please log in again`, 401);
+
 module.exports = (err, req, res, next) => {
   console.log(err.name, err.message);
   err.statusCode = err.statusCode || 500;
@@ -64,6 +70,10 @@ module.exports = (err, req, res, next) => {
 
   // 3) Validation Error
   if (error.name === 'ValidationError') error = handleDBValidationError(error);
+
+  // 4) JWT Invalid & Expired Token
+  if (error.name === 'JsonWebTokenError') error = handleJWTError(error);
+  if (error.name === 'TokenExpiredError') error = handleJWTExpiredError(error);
 
   // PRODUCTION 과 DEVELOPMENT 에러응답 구분
   if (process.env.NODE_ENV === 'development') {
