@@ -53,7 +53,7 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
-  let error = { ...err };
+  let error = { ...err, message: err.message, name: err.name };
 
   // Mongo DB Error Exception
   // 1) ID Cast Error
@@ -67,7 +67,7 @@ module.exports = (err, req, res, next) => {
 
   // PRODUCTION 과 DEVELOPMENT 에러응답 구분
   if (process.env.NODE_ENV === 'development') {
-    errorResDev(res, error);
+    errorResDev(res, err);
   } else {
     errorResProd(res, error);
   }
