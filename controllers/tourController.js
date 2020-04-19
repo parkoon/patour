@@ -1,4 +1,5 @@
 const Tour = require('../models/tourModel');
+const APIFeatures = require('../helpers/apiFeatures');
 // const fs = require('fs');
 // const path = require('path');
 
@@ -34,52 +35,23 @@ const Tour = require('../models/tourModel');
 //   next();
 // };
 
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.fields = 'name,price,ratingsAverage';
+  req.query.sort = 'price,-ratingsAverage';
+
+  next();
+};
+
 exports.getTours = async (req, res) => {
   try {
-    console.log(req.query);
-
-    // BUILD QUERY
-    // 1A) Filtering
-    const queryObj = { ...req.query };
-    const excludedFields = ['pages', 'sort', 'limit', 'fields'];
-    excludedFields.forEach((el) => delete queryObj[el]);
-
-    // 1B) Advanced filtering
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
-
-    let query = Tour.find(JSON.parse(queryStr));
-
-    // 2) Sorting
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    // 3) Field limiting
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // 4) Pagination
-    const pages = req.query.pages * 1 || 1;
-    const limit = req.query.limit * 1 || 10;
-    const skip = (pages - 1) * limit;
-
-    if (req.query.pages) {
-      const numTour = await Tour.countDocuments();
-      if (skip >= numTour) throw new Error('페이지가 존재하지 않습니다.');
-    }
-
-    query.skip(skip).limit(limit);
-
     // EXECUTE QUERY
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginante();
+    const tours = await features.query;
 
     res.json({
       status: 'success',
@@ -87,12 +59,6 @@ exports.getTours = async (req, res) => {
         tours,
       },
     });
-
-    // const tours = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
   } catch (err) {
     res.status(404).json({
       status: 'failure',
