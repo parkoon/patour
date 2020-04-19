@@ -22,6 +22,7 @@ const userSchema = mongoose.Schema({
     type: String,
     required: [true, 'Please provide a password'],
     minLength: 8,
+    select: false, // select 할 때 패스워드 감추기
   },
   passwordConfirm: {
     type: String,
