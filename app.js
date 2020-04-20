@@ -15,6 +15,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 // 1) MIDDLEWARES
 app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {

@@ -12,18 +12,21 @@ const signToken = (id) => {
   });
 };
 
-exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create(req.body);
+const createAndSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
+  res.status(statusCode).json({
     status: 'success',
     token,
     data: {
-      user: newUser,
+      user,
     },
   });
+};
+
+exports.signup = catchAsync(async (req, res, next) => {
+  const newUser = await User.create(req.body);
+  createAndSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -42,11 +45,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
 
   // 3) If everyting ok, send otken to client
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 201, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -61,7 +60,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (!token)
     return next(
-      new AppError('You are not logged in! Please log in to get acess', 401)
+      new AppError('You are not logged in! Please log in to get acess', 200)
     );
 
   // 2) Validate token
@@ -145,13 +144,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
-  console.log(hashedToken);
+
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
 
-  console.log('user', user);
   // 2) If token has not expired, and there is user, set the password
   if (!user) return next(new AppError(`Token is invalid or expired`, 400));
 
@@ -164,10 +162,25 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
-  const token = signToken(user._id);
+  createAndSendToken(user, 201, res);
+});
 
-  res.statsu(200).json({
-    status: 'success',
-    token,
-  });
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1) Get user from collection
+  // 로그인이 되어 있다는 가정하에, req.user에 접근할 수 있다.
+  const user = await User.findById(req.user.id).select('+password');
+  // const user = User.findOne({ _id: req.body.passwordCurrent });
+  if (!user) return next(new AppError('User not found', 404));
+
+  // 2) Check if  POSTed current password is correct
+  const isCorrect = await user.correctPassword(req.body.passwordCurrent);
+  if (!isCorrect) return next(new AppError('Password is not correct', 404));
+
+  // 3) If so, update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // 4) Log user in, send JWT
+  createAndSendToken(user, 201, res);
 });
