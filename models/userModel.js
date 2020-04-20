@@ -43,6 +43,11 @@ const userSchema = mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -60,6 +65,13 @@ userSchema.pre('save', function (next) {
   // isNew: 새로 생성 되었는지 알 수 있는 플래그
   if (!this.isModified('password') || !this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  // active 가 true인 사용자만 찾는다
+  // this.find({ active: true }); 이렇게 하면, 기존에 값이 없었던 사용자도 모두 안찾아버린다.
+  this.find({ active: { $ne: false } });
   next();
 });
 

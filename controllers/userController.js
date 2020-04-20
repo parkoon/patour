@@ -33,6 +33,26 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   //
 });
 
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  // 1) 유저를 찾고
+  // 2) 찾은 유저의 active 값을 false로 바꿔준다. active 이외의 필드는 제외한다.
+  // const filteredObj = filterObj(req.body, 'active');
+  // 그냥 지우는 행동 하나기 때문에, 별도로 값을 받지 않고, active를 false로 변경한다
+  await User.findByIdAndUpdate(
+    req.user.id,
+    { active: false },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 exports.getUsers = (req, res) => {
   res.status(500).json({
     status: 'error',
