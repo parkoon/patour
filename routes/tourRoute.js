@@ -24,7 +24,7 @@ router
   .patch(tourController.udpateTour);
 router
   .route('/')
-  .get(authController.protect, tourController.getTours)
+  .get(tourController.getTours)
   // .post(tourController.checkBody, tourController.createTour);
   .post(tourController.createTour);
 

@@ -28,7 +28,9 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 100,
   message: 'Too many request from this IP, please try again in an hour',
 });
-app.use('/api', limiter);
+if (process.env.NODE_ENV === 'production') {
+  app.use('/api', limiter);
+}
 
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
