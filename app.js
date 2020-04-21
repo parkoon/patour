@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const cookieParser = require('cookie-parser');
 
 const AppError = require('./helpers/appError');
 const globalErrorHander = require('./controllers/errorController');
@@ -13,6 +14,7 @@ const app = express();
 
 const tourRouter = require('./routes/tourRoute');
 const userRouter = require('./routes/userRoute');
+const reviewRouter = require('./routes/reviewRoute');
 
 // 1) MIDDLEWARES
 if (process.env.NODE_ENV === 'development') {
@@ -34,6 +36,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 // app.use(express.urlencoded({ extended: true }));
 
 // Data sanitization against NoSQL query injection
@@ -55,6 +58,7 @@ app.use((req, res, next) => {
 // 2) ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`));
