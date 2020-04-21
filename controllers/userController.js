@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
+const factory = require('./factory');
 
 const filterObj = (target, ...allowedFields) => {
   const obj = {};
@@ -53,38 +54,16 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUsers = catchAsync(async (req, res) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      users,
-    },
-  });
-});
-
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'router is not defined yet',
-  });
-};
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'router is not defined yet',
-  });
-};
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'router is not defined yet',
-  });
-};
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'router is not defined yet',
+    message: 'This route is not defined! Please use /signup instead',
   });
 };
+
+exports.getUser = factory.getOne(User);
+exports.getAllUsers = factory.getAll(User);
+
+// Do NOT update passwords with this!
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);

@@ -22,6 +22,9 @@ router
   .get(userController.getUser)
   .delete(userController.deleteUser)
   .patch(userController.updateUser);
-router.route('/').post(userController.createUser).get(userController.getUsers);
+router
+  .route('/')
+  .post(userController.createUser)
+  .get(userController.getAllUsers);
 
 module.exports = router;

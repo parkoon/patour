@@ -11,7 +11,7 @@ router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/top-5-cheap')
-  .get(tourController.aliasTopTours, tourController.getTours);
+  .get(tourController.aliasTopTours, tourController.getAllTours);
 
 router.route('/stats').get(tourController.getTourStats);
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
@@ -24,11 +24,11 @@ router
     tourController.deleteTour
   )
   .get(tourController.getTour)
-  .patch(tourController.udpateTour);
+  .patch(tourController.updateTour);
 
 router
   .route('/')
-  .get(tourController.getTours)
+  .get(tourController.getAllTours)
   // .post(tourController.checkBody, tourController.createTour);
   .post(tourController.createTour);
 
