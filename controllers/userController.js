@@ -34,6 +34,11 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   //
 });
 
+exports.getMe = catchAsync(async (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+});
+
 exports.deleteMe = catchAsync(async (req, res, next) => {
   // 1) 유저를 찾고
   // 2) 찾은 유저의 active 값을 false로 바꿔준다. active 이외의 필드는 제외한다.
