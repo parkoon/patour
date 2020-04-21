@@ -53,12 +53,17 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'router is not defined yet',
+exports.getUsers = catchAsync(async (req, res) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      users,
+    },
   });
-};
+});
+
 exports.getUser = (req, res) => {
   res.status(500).json({
     status: 'error',
