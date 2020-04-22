@@ -1,0 +1,13 @@
+mixin reviewCard(meta)
+    .reviews__card
+        -const { user, review, rating } = meta
+        -const { name, photo } = user
+        .reviews__avatar
+            img.reviews__avatar-img(src=`/img/users/${photo}`, alt=`${name}`)
+            h6.reviews__user= name
+        p.reviews__text= review
+
+        .reviews__rating
+            each count in [1, 2, 3, 4, 5]
+                svg.reviews__star(class=`reviews__star--${rating >= count ? 'active' : 'inactive'}`)
+                    use(xlink:href='/img/icons.svg#icon-star')

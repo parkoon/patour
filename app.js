@@ -13,11 +13,12 @@ const globalErrorHander = require('./controllers/errorController');
 const app = express();
 
 app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, './views'));
+app.set('views', path.join(__dirname, 'views'));
 
 const tourRouter = require('./routes/tourRoute');
 const userRouter = require('./routes/userRoute');
 const reviewRouter = require('./routes/reviewRoute');
+const viewRouter = require('./routes/viewRoute');
 
 // 1) MIDDLEWARES
 
@@ -60,10 +61,7 @@ app.use((req, res, next) => {
 });
 
 // 2) ROUTES
-app.get('/', (req, res) => {
-  res.render('base');
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
