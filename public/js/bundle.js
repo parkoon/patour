@@ -8374,8 +8374,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.hideAlert = exports.showAlert = void 0;
 
 var showAlert = function showAlert(type, message) {
+  hideAlert();
   var markup = "<div class=\"alert alert--".concat(type, "\">").concat(message, "</div>");
   document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
+  window.setTimeout(hideAlert, 1000);
 };
 
 exports.showAlert = showAlert;

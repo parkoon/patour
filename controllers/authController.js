@@ -6,9 +6,9 @@ const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 const sendEmail = require('../helpers/email');
 
-const signToken = (id) => {
+const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+    expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
 
@@ -18,7 +18,7 @@ const createAndSendToken = (user, statusCode, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true,
+    httpOnly: true
   };
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; // https only
 
@@ -29,8 +29,8 @@ const createAndSendToken = (user, statusCode, res) => {
   res.status(statusCode).json({
     status: 'success',
     data: {
-      user,
-    },
+      user
+    }
   });
 };
 
@@ -42,10 +42,10 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: true,
+    httpOnly: true
   });
   res.status(200).json({
-    status: 'success',
+    status: 'success'
   });
 };
 
@@ -174,12 +174,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await sendEmail({
       email: user.email,
       subject: 'Your password reset token (valid for 10 min)',
-      message,
+      message
     });
 
     res.status(200).json({
       status: 'success',
-      message: 'Token sent to email',
+      message: 'Token sent to email'
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -203,7 +203,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
-    passwordResetExpires: { $gt: Date.now() },
+    passwordResetExpires: { $gt: Date.now() }
   });
 
   // 2) If token has not expired, and there is user, set the password

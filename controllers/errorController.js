@@ -5,7 +5,7 @@ const errorResDev = (res, err) => {
     err: err,
     stack: err.stack,
     status: err.statusCode,
-    message: err.message,
+    message: err.message
   });
 };
 
@@ -14,7 +14,7 @@ const errorResProd = (res, err) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.statusCode,
-      message: err.message,
+      message: err.message
     });
 
     // Programming 에러 일 경우
@@ -25,30 +25,30 @@ const errorResProd = (res, err) => {
     // 2) 에러 메세지 전송
     res.status(500).json({
       status: 'error',
-      message: 'Someting went very wrong!',
+      message: 'Someting went very wrong!'
     });
   }
 };
 
-const handleDBCastError = (err) => {
+const handleDBCastError = err => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
 
-const handleDBDucplicatedFieldError = (err) => {
+const handleDBDucplicatedFieldError = err => {
   const value = err.errmsg.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
   const message = `Duplicated field error, check your value ${value}`;
   return new AppError(message, 400);
 };
 
-const handleDBValidationError = (err) => {
-  const errors = Object.values(err.errors).map((el) => el.message);
+const handleDBValidationError = err => {
+  const errors = Object.values(err.errors).map(el => el.message);
 
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 };
 
-const handleJWTError = (err) =>
+const handleJWTError = err =>
   new AppError(`Invalid Token. Please log in again!`, 401);
 
 const handleJWTExpiredError = () =>

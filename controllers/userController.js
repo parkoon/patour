@@ -5,7 +5,7 @@ const factory = require('./factory');
 
 const filterObj = (target, ...allowedFields) => {
   const obj = {};
-  Object.keys(target).forEach((key) => {
+  Object.keys(target).forEach(key => {
     if (allowedFields.includes(key)) obj[key] = target[key];
   });
   return obj;
@@ -27,8 +27,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      user: updatedUser,
-    },
+      user: updatedUser
+    }
   });
 
   //
@@ -49,20 +49,20 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     { active: false },
     {
       new: true,
-      runValidators: true,
+      runValidators: true
     }
   );
 
   res.status(200).json({
     status: 'success',
-    data: null,
+    data: null
   });
 });
 
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not defined! Please use /signup instead',
+    message: 'This route is not defined! Please use /signup instead'
   });
 };
 

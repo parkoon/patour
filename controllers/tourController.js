@@ -19,7 +19,7 @@ exports.aliasTopTours = (req, res, next) => {
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
-      $match: { ratingsAverage: { $gte: 4.5 } },
+      $match: { ratingsAverage: { $gte: 4.5 } }
     },
     {
       $group: {
@@ -29,25 +29,25 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
         avgRating: { $avg: '$ratingsAverage' },
         avgPrice: { $avg: '$price' },
         minPrice: { $min: '$price' },
-        maxPrice: { $max: '$price' },
-      },
+        maxPrice: { $max: '$price' }
+      }
     },
     {
       $sort: {
-        avgPrice: 1,
-      },
+        avgPrice: 1
+      }
     },
     {
       $match: {
-        _id: { $ne: 'easy' },
-      },
-    },
+        _id: { $ne: 'easy' }
+      }
+    }
   ]);
   res.status(200).json({
     status: 'success',
     data: {
-      stats,
-    },
+      stats
+    }
   });
 });
 
@@ -55,45 +55,45 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1; // 2021
   const plan = await Tour.aggregate([
     {
-      $unwind: '$startDates',
+      $unwind: '$startDates'
     },
     {
       $match: {
         startDates: {
           $gte: new Date(`${year}-01-01`),
-          $lte: new Date(`${year}-12-31`),
-        },
-      },
+          $lte: new Date(`${year}-12-31`)
+        }
+      }
     },
     {
       $group: {
         _id: { $month: '$startDates' },
         numTourStarts: { $sum: 1 },
-        tours: { $push: '$name' },
-      },
+        tours: { $push: '$name' }
+      }
     },
     {
       $addFields: {
-        month: '$_id',
-      },
+        month: '$_id'
+      }
     },
     {
       $project: {
-        _id: 0,
-      },
+        _id: 0
+      }
     },
     {
-      $sort: { numTourStarts: -1 },
+      $sort: { numTourStarts: -1 }
     },
     {
-      $limit: 12,
-    },
+      $limit: 12
+    }
   ]);
 
   res.status(200).json({
     status: 'success',
     data: {
-      plan,
-    },
+      plan
+    }
   });
 });
