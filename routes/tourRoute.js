@@ -38,7 +38,7 @@ router
     authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour
   )
-  .get(tourController.getTour)
+  .get(authController.protect, tourController.getTour)
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
