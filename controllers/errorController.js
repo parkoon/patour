@@ -1,33 +1,63 @@
 const AppError = require('../helpers/appError');
 
-const errorResDev = (res, err) => {
-  res.status(err.statusCode).json({
-    err: err,
-    stack: err.stack,
-    status: err.statusCode,
+const errorResDev = (err, req, res) => {
+  // API
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      err: err,
+      stack: err.stack,
+      status: err.statusCode,
+      message: err.message
+    });
+  }
+  // RENDERED WEBSITE
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
     message: err.message
   });
 };
 
-const errorResProd = (res, err) => {
-  // Operation 에러 일 경우
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.statusCode,
-      message: err.message
-    });
+const errorResProd = (err, req, res) => {
+  // API
+  if (req.originalUrl.startsWith('/api')) {
+    // Operation 에러 일 경우
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.statusCode,
+        message: err.message
+      });
 
-    // Programming 에러 일 경우
-  } else {
+      // Programming 에러 일 경우
+    }
     // 1) 로깅
     console.error('ERROR !!', err);
 
     // 2) 에러 메세지 전송
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Someting went very wrong!'
     });
   }
+
+  // RENDERED WEBSITE
+  // Operation 에러 일 경우
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      message: err.message
+    });
+
+    // Programming 에러 일 경우
+  }
+
+  // 1) 로깅
+  console.error('ERROR !!', err);
+
+  // RENDERED WEBSITE
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    message: 'Please try again later'
+  });
 };
 
 const handleDBCastError = err => {
@@ -77,8 +107,8 @@ module.exports = (err, req, res, next) => {
 
   // PRODUCTION 과 DEVELOPMENT 에러응답 구분
   if (process.env.NODE_ENV === 'development') {
-    errorResDev(res, err);
+    errorResDev(err, req, res);
   } else {
-    errorResProd(res, error);
+    errorResProd(error, req, res);
   }
 };
