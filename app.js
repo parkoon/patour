@@ -28,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+app.use(morgan('dev'));
 
 // Set security HHTP headers
 app.use(helmet());
@@ -36,7 +37,7 @@ app.use(helmet());
 const limiter = rateLimit({
   max: 3,
   windowMs: 60 * 60 * 100,
-  message: 'Too many request from this IP, please try again in an hour',
+  message: 'Too many request from this IP, please try again in an hour'
 });
 if (process.env.NODE_ENV === 'production') {
   app.use('/api', limiter);

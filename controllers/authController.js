@@ -40,6 +40,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.logout = (req, res) => {
+  console.log('logout');
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true
@@ -79,7 +80,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.cookies.jwt;
   }
 
-  console.log('token', token);
+  console.log('token in protect', token);
 
   if (!token)
     return next(

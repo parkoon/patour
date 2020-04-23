@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
+
 import axios from 'axios';
-import { showAlert } from './alert.js';
+import { showAlert } from './alerts.js';
 
 export const login = async (email, password) => {
   try {
@@ -30,6 +31,18 @@ export const login = async (email, password) => {
   }
 };
 
-// export const logout = () => {
+export const logout = async () => {
+  try {
+    const res = await axios({
+      method: 'POST',
+      url: 'http://localhost:4000/api/v1/users/logout'
+    });
 
-// }
+    if (res.data.status === 'success') {
+      alert('reload');
+      location.reload(true); // false: 캐시에서 우선적으로 파일을 찾는다. 없다면 서버에 요청을 한다.
+    }
+  } catch (err) {
+    showAlert('error', 'Error logging out! Try again');
+  }
+};
