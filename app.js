@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer');
 const morgan = require('morgan');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
