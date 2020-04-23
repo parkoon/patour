@@ -49,9 +49,8 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2) Check if user exist && password is correct
   // password를 모델 생성할 때 감췄으므로, 필요할 때 select를 추가로 해줘야한다.
   const user = await User.findOne({ email }).select('+password');
-  const isCorrect = await user.correctPassword(password);
 
-  if (!user || !isCorrect)
+  if (!user || !(await user.correctPassword(password)))
     return next(new AppError('Incorrect email or password', 401));
 
   // 3) If everyting ok, send otken to client
