@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production node server.js",
     "dev": "NODE_ENV=development nodemon server.js",
     "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
-    "build:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
     "debug": "ndb server.js",
     "mock:delete": "node ./dev-data/data/import-dev-data.js --delete",
     "mock:import": "node ./dev-data/data/import-dev-data.js --import"
