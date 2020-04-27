@@ -17,7 +17,6 @@ export const login = async (email, password) => {
 
     if (res.data.status === 'success') {
       showAlert('success', 'Logged in successfully!');
-      alert('login successfully');
       window.setTimeout(() => {
         // replace는 새 문서를 불러오기 전에, 현재 문서를 브라우저의 히스토리에서 제거함.
         // A -> B(replace) -> C then, C (back) -> A
@@ -39,7 +38,6 @@ export const logout = async () => {
     });
 
     if (res.data.status === 'success') {
-      alert('reload');
       location.reload(true); // false: 캐시에서 우선적으로 파일을 찾는다. 없다면 서버에 요청을 한다.
     }
   } catch (err) {

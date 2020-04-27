@@ -20,7 +20,6 @@ if (map) {
 if (loginForm) {
   loginForm.addEventListener('submit', e => {
     e.preventDefault();
-    alert('로그인');
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     login(email, password);
